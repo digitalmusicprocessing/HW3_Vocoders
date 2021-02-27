@@ -35,7 +35,8 @@ def comb_tune(tune_filename, voice_filename, sixteenth_len, max_pulse):
     idx = 0
     for note, d in zip(notes, durations):
         N = int(d*sr)
-        xi = x[idx:idx+N]
+        # Pull out a chunk of audio aligned with this note
+        xi = x[idx:idx+N] 
         ## TODO: Convolve this chunk with a comb 
         ## with the appropriate number of samples and
         ## with the appropriate spacing based on note

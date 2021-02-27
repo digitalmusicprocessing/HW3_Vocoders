@@ -213,7 +213,7 @@ def griffin_lim(SAbs, w, h, win_fn, n_iters, eps = 2.2204e-16):
     n_inters: int
         Number of iterations of phase retrieval to perform
     eps: float
-        If a magnitude is less than this amount, don't rescale
+        If a magnitude is less than this amount, make the phase 0
     
     Returns
     -------

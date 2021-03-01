@@ -7,7 +7,7 @@ from scipy.interpolate import interp2d
 from instruments import *
 
 
-def comb_tune(tune_filename, voice_filename, sixteenth_len, max_pulse):
+def comb_tune(tune_filename, voice_filename, sixteenth_len, num_pulses):
     """
     Make a tune using a comb filter
 
@@ -19,8 +19,8 @@ def comb_tune(tune_filename, voice_filename, sixteenth_len, max_pulse):
         Path to a voice audio file
     sixteenth_len: float
         Length of a sixteenth note in seconds
-    max_pulse: int
-        The maximum number of pulses to use in the comb filter
+    num_pulses: int
+        The number of pulses to use in the comb filter
     
     Returns
     -------

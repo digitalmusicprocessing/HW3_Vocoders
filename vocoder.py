@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import librosa
 from scipy.signal import fftconvolve
-from scipy.ndimage.filters import maximum_filter1d
+from scipy.ndimage import maximum_filter, maximum_filter1d
 from scipy.interpolate import interp2d
 from instruments import *
 
@@ -262,6 +262,80 @@ def time_shift(x, fac, w, h, win_fn, n_iters):
     x = griffin_lim(SInterp, w, h, win_fn, n_iters)
     return x
 
+def im2sound(impath, w, h, win_fn, n_iters):
+    """
+    Turn an image into a sound by converting it into
+    a complex spectrogram and inverting that spectrogram
+    using Griffin-Lim
+
+    Parameters
+    ----------
+    impath: string
+        Path to image file
+    w: int
+        Window length
+    h: int
+        Hop length
+    win_fn: int -> ndarray(N)
+        Window function
+    n_inters: int
+        Number of iterations of phase retrieval
+    
+    Return
+    ------
+    y: ndarray(N)
+        Audio samples corresponding to the inverted image
+    """
+    from skimage.color import rgb2gray
+    import skimage.io
+    X = np.flipud(rgb2gray(skimage.io.imread(impath)))
+    nwin = X.shape[1]
+    S = np.zeros((w, nwin))
+    ## TODO: Fill in the spectrogram with the image X
+    ## and its mirror image so that the inverse will be real
+    plt.figure(figsize=(8, 8))
+    plt.imshow(S, aspect='auto', cmap='magma_r')
+    plt.gca().invert_yaxis()
+    plt.xlabel("Window Index")
+    plt.ylabel("Frequency Index")
+    plt.savefig("S.png", bbox_inches='tight')
+    return griffin_lim(S, w, h, win_fn, n_iters)
+
+
+def make_beepy_tune(x, w, h, win_fn, time_win, freq_win, max_freq, n_iters):
+    """ 
+    Make a spectrogram consisting only of 1s where the maxes of
+    the original spectrogram are, and 0 everywhere else.  Then
+    invert the new spectrogram with Griffin-Lim to obtain a beepy
+    tune that tricks Shazam
+
+    Parameters
+    ----------
+    x: ndarray(N)
+        Original audio samples
+    w: int
+        Window length
+    h: int
+        Hop length
+    win_fn: int -> ndarray(N)
+        Window function
+    time_win: int
+        Time window half-length
+    freq_win: int
+        Frequency window half-length
+    max_freq: int
+        Only consider maxes up to this frequency index
+    n_inters: int
+        Number of iterations of phase retrieval to perform
+    
+    Return
+    ------
+    y: ndarray(N)
+        Beepy tune
+    """
+    pass
+    ## TODO: Fill this in
+
 def pitch_shift(x, shift, w, h, win_fn, n_iters):
     """
     Pitch shift audio without changing the timing by taking 
@@ -309,42 +383,3 @@ def pitch_shift(x, shift, w, h, win_fn, n_iters):
     plt.title("Spectrogram Shifted by {} Halfsteps".format(shift))
     plt.savefig("PitchShift.svg", bbox_inches='tight')
     return x
-
-def im2sound(impath, w, h, win_fn, n_iters):
-    """
-    Turn an image into a sound by converting it into
-    a complex spectrogram and inverting that spectrogram
-    using Griffin-Lim
-
-    Parameters
-    ----------
-    impath: string
-        Path to image file
-    w: int
-        Window length
-    h: int
-        Hop length
-    win_fn: int -> ndarray(N)
-        Window function
-    n_inters: int
-        Number of iterations of phase retrieval
-    
-    Return
-    ------
-    y: ndarray(N)
-        Audio samples corresponding to the inverted image
-    """
-    from skimage.color import rgb2gray
-    import skimage.io
-    X = np.flipud(rgb2gray(skimage.io.imread(impath)))
-    nwin = X.shape[1]
-    S = np.zeros((w, nwin))
-    ## TODO: Fill in the spectrogram with the image X
-    ## and its mirror image so that the inverse will be real
-    plt.figure(figsize=(8, 8))
-    plt.imshow(S, aspect='auto', cmap='magma_r')
-    plt.gca().invert_yaxis()
-    plt.xlabel("Window Index")
-    plt.ylabel("Frequency Index")
-    plt.savefig("S.png", bbox_inches='tight')
-    return griffin_lim(S, w, h, win_fn, n_iters)

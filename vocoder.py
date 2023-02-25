@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import librosa
+from scipy.io import wavfile
 from scipy.signal import fftconvolve
 from scipy.ndimage import maximum_filter, maximum_filter1d
 from scipy.interpolate import interp2d
@@ -30,7 +30,8 @@ def comb_tune(tune_filename, voice_filename, sixteenth_len, num_pulses):
     tune = np.loadtxt(tune_filename)
     notes = tune[:, 0]
     durations = tune[:, 1]*sixteenth_len
-    x, sr = librosa.load(voice_filename)
+    sr, x = wavfile.read(voice_filename)
+    x = np.array(x, dtype=float)/32768
     y = np.zeros_like(x) # Output audio
     idx = 0
     for note, d in zip(notes, durations):

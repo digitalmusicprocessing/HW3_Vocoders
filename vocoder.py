@@ -113,14 +113,14 @@ def stft(x, w, h, win_fn):
     
     Returns
     -------
-    ndarray(w, nwindows, dtype=np.complex) STFT
+    ndarray(w, nwindows, dtype=complex) STFT
     """
     N = len(x)
     nwin = int(np.ceil((N-w)/h))+1
     # Make a 2D array
     # The rows correspond to frequency bins
     # The columns correspond to windows moved forward in time
-    S = np.zeros((w, nwin), dtype=np.complex)
+    S = np.zeros((w, nwin), dtype=complex)
     # Loop through all of the windows, and put the fourier
     # transform amplitudes of each window in its own column
     for j in range(nwin):
@@ -140,7 +140,7 @@ def istft(S, w, h, win_fn):
     Compute the complex inverse Short-Time Fourier Transform (STFT)
     Parameters
     ----------
-    S: ndarray(w, nwindows, dtype=np.complex)
+    S: ndarray(w, nwindows, dtype=complex)
         Complex spectrogram
     w: int
         Window length

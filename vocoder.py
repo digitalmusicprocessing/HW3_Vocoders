@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from scipy.signal import fftconvolve
 from scipy.ndimage import maximum_filter, maximum_filter1d
-from scipy.interpolate import interp2d
 from instruments import *
 
 
@@ -254,12 +253,13 @@ def time_shift(x, fac, w, h, win_fn, n_iters):
     y: ndarray(N)
         Time-scaled audio samples
     """
+    from scipy.interpolate import RectBivariateSpline
     S = np.abs(stft(x, w, h, win_fn))
     freqs = np.arange(w)
     times = np.arange(S.shape[1])
-    f = interp2d(times, freqs, S, kind = 'linear')
+    f = RectBivariateSpline(freqs, times, S)
     new_times = np.linspace(0, times[-1], int(fac*len(times)))
-    SInterp = f(new_times, freqs)
+    SInterp = f(freqs, new_times)
     x = griffin_lim(SInterp, w, h, win_fn, n_iters)
     return x
 
@@ -363,6 +363,7 @@ def pitch_shift(x, shift, w, h, win_fn, n_iters):
     y: ndarray(N)
         Pitch shifted audio samples
     """
+    from scipy.interpolate import RectBivariateSpline
     S = np.abs(stft(x, w, h, win_fn))
     ## TODO: Fill this in to create a spectrogram S2
     ## which is a frequency warped version of S, and invert this
